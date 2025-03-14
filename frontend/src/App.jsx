@@ -1,56 +1,55 @@
 import React, { useState, useEffect } from "react";
 import Home from "./comonents/Home";
 import Nav from "./comonents/Nav";
+import Pagination from "./comonents/Pagination";
 
-const url = "https://omdbapi.com/?i=tt3896198&apikey=a52b5a5a&s=ironman";
+const baseUrl = "https://omdbapi.com/?i=tt3896198&apikey=a52b5a5a&s=";
 
 function App() {
-  const [movieList, setMovieList] = useState();
+  const [movieList, setMovieList] = useState([]);
+  let [page, setPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("ironman");
+
+  //fetch movies
   useEffect(() => {
-    async function fetchMovieList(url) {
+    async function fetchMovieList() {
       try {
-        const resp = await fetch(url);
+        setMovieList([]);
+        const resp = await fetch(`${baseUrl}${searchTerm}&page=${page}`);
         if (!resp.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await resp.json();
         setMovieList(data.Search);
-        // console.log(data.Search);
+        console.log(data.Search);
         return data;
       } catch (error) {
         console.log(error);
       }
     }
-    fetchMovieList(url);
+    fetchMovieList();
     // console.log(movieList);
-  }, []);
+  }, [page, searchTerm]);
 
   //search Function
 
   const submitSearch = async (e, search) => {
     e.preventDefault();
-
-    try {
-      const resp = await fetch(
-        `https://omdbapi.com/?i=tt3896198&apikey=a52b5a5a&s=${search}`
-      );
-      if (!resp.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const data = await resp.json();
-      setMovieList(data.Search);
-      console.log(data.Search);
-      return data;
-    } catch (error) {
-      console.log(error);
-    }
+    setSearchTerm(search);
   };
+
+  const decreasePage = () => setPage((prevPage) => Math.max(prevPage - 1, 1));
+  const increasePage = () => setPage((prevPage) => prevPage + 1);
 
   return (
     <>
       <Nav submitSearch={submitSearch} />
       <Home movieList={movieList} />
+      <Pagination
+        page={page}
+        decreasePage={decreasePage}
+        increasePage={increasePage}
+      />
     </>
   );
 }

@@ -3,7 +3,7 @@ import MovieCard from "./MovieCard";
 import "./styles/latestMovie.scss";
 
 const Home = ({ movieList }) => {
-  console.log(movieList);
+  // console.log(movieList);
   if (!movieList) {
     return (
       <>
